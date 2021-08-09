@@ -149,12 +149,31 @@ var pokemonEl = document.querySelector('.js-pokemon-profil'); // fetch('https://
 // makePromise().then(r => console.log(r))
 
 var horses = ['Secretariat', 'Eclipse', 'West Australia', 'Fluing Fox', 'Sebascuit'];
-console.log('%c Заезд начался, ставки не принимаются!', 'color: brown; font-size: 14px;');
-var promises = horses.map(function (hors) {
-  return run(hors);
-});
-promises.then(function (r) {
-  return console.log(r);
+var buttonRaceEl = document.querySelector('.js-button-race');
+var winnerEl = document.querySelector('.js-winner');
+var progressEl = document.querySelector('.js-progress');
+var resultTableEl = document.querySelector('.js-result-table > tbody');
+var num = 0;
+buttonRaceEl.addEventListener('click', function () {
+  winnerEl.textContent = '';
+  progressEl.textContent = 'Заезд начался, ставки не принимаются!';
+  var promises = horses.map(function (hors) {
+    return run(hors);
+  });
+  num += 1;
+  Promise.race(promises).then(function (_ref) {
+    var horse = _ref.horse,
+        time = _ref.time;
+    winnerEl.textContent = "\u041F\u043E\u0431\u0435\u0434\u0438\u0442\u0435\u043B\u044C ".concat(horse, ", \u0444\u0438\u043D\u0438\u0448\u0438\u0440\u043E\u0432\u0430\u043B \u0437\u0430 ").concat(time, " \u0432\u0440\u0435\u043C\u0435\u043D\u0438");
+    apdateTableWinner({
+      horse: horse,
+      time: time,
+      num: num
+    });
+  });
+  Promise.all(promises).then(function (r) {
+    return progressEl.textContent = 'Заезд окончен, ставки принимаются!';
+  });
 });
 
 function run(horse) {
@@ -171,16 +190,19 @@ function run(horse) {
 
 ;
 
+function apdateTableWinner(_ref2) {
+  var horse = _ref2.horse,
+      time = _ref2.time,
+      num = _ref2.num;
+  var tr = "<tr><td>".concat(num, "</td></tr><tr><td>").concat(horse, "</td></tr><tr><td>").concat(time, "</td></tr>");
+  resultTableEl.insertAdjacentHTML('beforeend', tr);
+}
+
 function getRandomTime(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
-} // console.log(
-//     '%c Победитель ${1}, финишировал за ${1} времени',
-//     'color: green; font-size: 14px;',
-// );
-// console.log(
-//     '%c Заезд окончен, ставки принимаются!',
-//     'color: blue; font-size: 14px;',
-// );
+}
+
+;
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

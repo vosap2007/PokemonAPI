@@ -47,15 +47,30 @@ const horses = [
     'Sebascuit',
 ];
 
-console.log(
-    '%c Заезд начался, ставки не принимаются!',
-    'color: brown; font-size: 14px;',
-);
+const buttonRaceEl =document.querySelector('.js-button-race');
+const winnerEl =document.querySelector('.js-winner');
+const progressEl =document.querySelector('.js-progress');
+const resultTableEl =document.querySelector('.js-result-table > tbody');
+let num = 0;
 
-const promises = horses.map(hors => run(hors));
-promises.then(r => console.log(r)); 
+buttonRaceEl.addEventListener('click', () => {
+    winnerEl.textContent ='';
+    progressEl.textContent = 'Заезд начался, ставки не принимаются!';
 
-function run(horse) {
+    const promises = horses.map(hors => run(hors));
+    
+    num += 1;
+
+   Promise.race(promises).then(({horse, time}) => {
+            winnerEl.textContent = `Победитель ${horse}, финишировал за ${time} времени`;
+            apdateTableWinner({horse, time, num});
+    });
+
+   Promise.all(promises).then(r => 
+    progressEl.textContent = 'Заезд окончен, ставки принимаются!');
+});
+
+   function run(horse) {
     return new Promise((res) => {
         const time = getRandomTime(2000, 3500);
 
@@ -65,16 +80,11 @@ function run(horse) {
     })
 };
 
-function getRandomTime(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+function apdateTableWinner({horse, time, num}) {
+    const tr = `<tr><td>${num}</td></tr><tr><td>${horse}</td></tr><tr><td>${time}</td></tr>`;
+    resultTableEl.insertAdjacentHTML('beforeend', tr);
 }
 
-// console.log(
-//     '%c Победитель ${1}, финишировал за ${1} времени',
-//     'color: green; font-size: 14px;',
-// );
-
-// console.log(
-//     '%c Заезд окончен, ставки принимаются!',
-//     'color: blue; font-size: 14px;',
-// );
+function getRandomTime(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
